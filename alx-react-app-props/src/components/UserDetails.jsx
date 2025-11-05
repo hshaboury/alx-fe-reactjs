@@ -13,12 +13,11 @@ function UserDetails() {
         borderRadius: '10px',
         maxWidth: '400px',
         backgroundColor: '#f9f9f9',
-        textAlign: 'center',
       }}
     >
-      <h2 style={{ color: 'navy' }}>User Details</h2>
-      <p style={{ color: '#333' }}>Name: {userData.name}</p>
-      <p style={{ color: '#555' }}>Email: {userData.email}</p>
+      <h3 style={{ color: 'navy' }}>User Details</h3>
+      <p>Name: {userData.name}</p>
+      <p>Email: {userData.email}</p>
     </div>
   );
 }
