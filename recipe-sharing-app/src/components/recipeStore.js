@@ -2,6 +2,12 @@ import { create } from "zustand";
 
 export const useRecipeStore = create((set) => ({
   recipes: [],
+  filteredRecipes: [],
+  searchTerm: "",
+  favorites: [],
+  recommendations: [],
+
+  // CRUD
   addRecipe: (newRecipe) =>
     set((state) => ({ recipes: [...state.recipes, newRecipe] })),
 
@@ -16,13 +22,31 @@ export const useRecipeStore = create((set) => ({
     set((state) => ({
       recipes: state.recipes.filter((recipe) => recipe.id !== id),
     })),
-  // NEW for Task 2
-  searchTerm: "",
-  filteredRecipes: [],
 
-  setSearchTerm: (term) =>
-    set({ searchTerm: term }),
+  // Favorites
+  addFavorite: (recipeId) =>
+    set((state) => ({
+      favorites: state.favorites.includes(recipeId)
+        ? state.favorites
+        : [...state.favorites, recipeId],
+    })),
 
+  removeFavorite: (recipeId) =>
+    set((state) => ({
+      favorites: state.favorites.filter((id) => id !== recipeId),
+    })),
+
+  // Recommendations (mock logic)
+  generateRecommendations: () =>
+    set((state) => {
+      const recommended = state.recipes.filter(
+        (recipe) => state.favorites.includes(recipe.id) && Math.random() > 0.5
+      );
+      return { recommendations: recommended };
+    }),
+
+  // Search / Filter
+  setSearchTerm: (term) => set({ searchTerm: term }),
   filterRecipes: () =>
     set((state) => ({
       filteredRecipes: state.recipes.filter((recipe) =>

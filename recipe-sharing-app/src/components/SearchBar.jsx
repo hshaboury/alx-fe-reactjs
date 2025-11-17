@@ -1,5 +1,5 @@
-import { useRecipeStore } from "./recipeStore";
 import { useEffect } from "react";
+import { useRecipeStore } from "./recipeStore";
 
 const SearchBar = () => {
   const searchTerm = useRecipeStore((state) => state.searchTerm);
@@ -8,7 +8,7 @@ const SearchBar = () => {
 
   useEffect(() => {
     filterRecipes();
-  }, [searchTerm]); 
+  }, [searchTerm]);
 
   return (
     <input
