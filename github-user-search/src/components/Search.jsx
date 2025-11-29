@@ -1,65 +1,108 @@
 import React, { useState } from "react";
-import { fetchUserData } from "../services/githubService";
+import { fetchUserDataAdvanced } from "../services/githubService";
 
 export default function Search() {
-  const [username, setUsername] = useState(""); 
-  const [user, setUser] = useState(null); 
-  const [loading, setLoading] = useState(false); 
-  const [error, setError] = useState(null); 
+  const [username, setUsername] = useState("");
+  const [location, setLocation] = useState("");
+  const [minRepos, setMinRepos] = useState("");
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!username) return;
+    if (!username && !location && !minRepos) return;
 
     setLoading(true);
     setError(null);
-    setUser(null);
+    setUsers([]);
 
     try {
-      const data = await fetchUserData(username);
-      setUser(data);
+      const data = await fetchUserDataAdvanced(username, location, minRepos);
+      setUsers(data.items); // API ترجع users في items
     } catch (err) {
-      setError("Looks like we can't find the user");
+      setError("Looks like we cant find the user");
     }
 
     setLoading(false);
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "30px" }}>
-      {/* Search Input */}
-      <form onSubmit={handleSubmit}>
+    <div className="max-w-3xl mx-auto mt-10 p-4">
+      {/* Advanced Search Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col md:flex-row gap-2 items-center"
+      >
         <input
           type="text"
-          placeholder="Enter GitHub username"
+          placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          style={{
-            padding: "10px",
-            width: "250px",
-            marginRight: "10px"
-          }}
+          className="border p-2 rounded w-full md:w-1/3"
         />
-        <button type="submit">Search</button>
+        <input
+          type="text"
+          placeholder="Location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="border p-2 rounded w-full md:w-1/3"
+        />
+        <input
+          type="number"
+          placeholder="Min Repos"
+          value={minRepos}
+          onChange={(e) => setMinRepos(e.target.value)}
+          className="border p-2 rounded w-full md:w-1/6"
+        />
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Search
+        </button>
       </form>
 
-      {/* Loading message */}
-      {loading && <p>Loading...</p>}
+      {/* Loading */}
+      {loading && <p className="mt-4">Loading...</p>}
 
-      {/* Error message */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {/* Error */}
+      {error && <p className="mt-4 text-red-500">{error}</p>}
 
-      {/* Display user information */}
-      {user && (
-        <div style={{ marginTop: "20px" }}>
-          <img src={user.avatar_url} width="120" />
-          <h2>{user.login}</h2>
-          <a href={user.html_url} target="_blank">
-            View Profile
-          </a>
-        </div>
-      )}
+      {/* Users Display */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {users.map((user) => (
+          <div
+            key={user.id}
+            className="border p-4 rounded shadow hover:shadow-lg"
+          >
+            <img
+              src={user.avatar_url}
+              alt={user.login}
+              className="w-20 h-20 rounded-full mx-auto"
+            />
+            <h2 className="text-center mt-2 font-bold">{user.login}</h2>
+            {user.location && (
+              <p className="text-center text-sm text-gray-600">
+                {user.location}
+              </p>
+            )}
+            <p className="text-center text-sm">
+              Repos: {user.public_repos || "N/A"}
+            </p>
+            <div className="text-center mt-2">
+              <a
+                href={user.html_url}
+                target="_blank"
+                className="text-blue-500 hover:underline"
+              >
+                View Profile
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
