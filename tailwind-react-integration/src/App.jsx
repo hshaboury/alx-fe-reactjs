@@ -1,7 +1,9 @@
+import UserProfile from "./components/UserProfile";
+
 function App() {
   return (
-    <div className="text-center p-10 text-2xl font-bold">
-      Tailwind React Project
+    <div className="min-h-screen bg-white">
+      <UserProfile />
     </div>
   );
 }
