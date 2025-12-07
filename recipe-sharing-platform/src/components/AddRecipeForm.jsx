@@ -8,10 +8,8 @@ function AddRecipeForm({ addRecipe }) {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Validation
+  // دالة validate منفصلة
+  const validate = () => {
     const newErrors = {};
     if (!title.trim()) newErrors.title = "Title is required";
     if (!ingredients.trim() || ingredients.split(",").length < 2)
@@ -20,29 +18,30 @@ function AddRecipeForm({ addRecipe }) {
       newErrors.steps = "Please provide detailed steps separated by periods";
 
     setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    if (Object.keys(newErrors).length === 0) {
-      // Form is valid, create new recipe object
-      const newRecipe = {
-        id: Date.now(),
-        title,
-        ingredients: ingredients.split(",").map((item) => item.trim()),
-        steps: steps.split(".").map((item) => item.trim()).filter(Boolean),
-      };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validate()) return;
 
-      // Call addRecipe from App.jsx to update state
-      addRecipe(newRecipe);
+    const newRecipe = {
+      id: Date.now(),
+      title,
+      ingredients: ingredients.split(",").map((item) => item.trim()),
+      steps: steps.split(".").map((item) => item.trim()).filter(Boolean),
+    };
 
-      // Reset form
-      setTitle("");
-      setIngredients("");
-      setSteps("");
-      setErrors({});
+    addRecipe(newRecipe);
 
-      // Optional: redirect to home page
-      navigate("/");
-      alert("Recipe submitted successfully!");
-    }
+    // Reset form
+    setTitle("");
+    setIngredients("");
+    setSteps("");
+    setErrors({});
+
+    navigate("/");
+    alert("Recipe submitted successfully!");
   };
 
   return (
